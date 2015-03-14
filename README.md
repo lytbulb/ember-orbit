@@ -47,8 +47,8 @@ bower install orbit.js
 bower install ember-orbit
 ```
 
-[A separate shim repo](https://github.com/orbitjs/bower-ember-orbit) is
-maintained for Ember-Orbit's Bower releases.
+[A separate shim repo](https://github.com/orbitjs/ember-orbit-builds) is
+maintained for builds.
 
 
 ## Using Ember-Orbit
