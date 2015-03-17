@@ -21,4 +21,11 @@ var createStore = function(options) {
   return container.lookup('store:main');
 };
 
-export { createStore };
+var spread = function(func){
+  return function(args){
+    func.apply(null, args);
+  };
+};
+
+
+export { createStore, spread };
