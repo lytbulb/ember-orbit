@@ -8,6 +8,7 @@ import { createStore } from 'tests/test-helper';
 import { RecordNotFoundException } from 'orbit-common/lib/exceptions';
 import RequestConnector from 'orbit/request-connector';
 
+
 Ember.RSVP.on('error', function(error){
   debugger
 });
@@ -137,9 +138,6 @@ test('hasOne is updated when linked record is updated in supporting source', fun
         equal(sun.get("id"), 'sun1', "sun id was lazy loaded");
         equal(sun.get("name"), 'Sol!', "sun name was lazy loaded");
       });
-    }).catch(function(error){
-      debugger
-
     });
   });
 
@@ -171,7 +169,6 @@ test('hasMany is lazy loaded', function(){
     .then(function(moons){
       store.orbitSource.on("didTransform", function(){
         start();
-        debugger
         equal(moons.get('firstObject.id'), 'europa1', "europa id was lazy loaded");
         equal(moons.get('firstObject.name'), 'Europa!', "europa name was lazy loaded");
       });
@@ -180,4 +177,40 @@ test('hasMany is lazy loaded', function(){
 
 });
 
-// test('hasMany is updated when new item is added to supporting source');
+test("hasMany is updated when new item is added to store's source", function(){
+  expect(2);
+  stop();
+
+  var jupiter = { id: 'jupiterId123', name: 'Jupiter', __rel: {moons: {'europa1': true}}};
+  var europa = { id: 'europa1', name: "Europa!", __rel: {} };
+  var ganymede = { id: 'ganymede2', name: "Ganymede!", __rel: {} };
+
+  store.orbitSource.reset({
+    planet: {
+      'jupiterId123': jupiter
+    },
+    moon: {
+      'europa1': europa
+    }
+  });
+
+  Ember.run(function() {
+
+    store.find('planet', 'jupiterId123')
+    .then(function(jupiter){
+      return jupiter.get('moons');
+    })
+    .then(function(moons){
+      var operations = [
+        { op: 'add', path: ['moon', ganymede.id], value: ganymede },
+        { op: 'add', path: ['planet', jupiter.id, '__rel', 'moons', ganymede.id], value: true }
+      ];
+
+      store.orbitSource.transform(operations).then(function(){
+        start();
+        equal(moons.objectAt(0).get("name"), europa.name);
+        equal(moons.objectAt(1).get("name"), ganymede.name);
+      });
+    });
+  });  
+});
