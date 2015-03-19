@@ -201,15 +201,16 @@ test("hasMany is updated when new item is added to store's source", function(){
       return jupiter.get('moons');
     })
     .then(function(moons){
-      var operations = [
-        { op: 'add', path: ['moon', ganymede.id], value: ganymede },
-        { op: 'add', path: ['planet', jupiter.id, '__rel', 'moons', ganymede.id], value: true }
-      ];
+      var addLinkOp = { op: 'add', path: ['planet', jupiter.id, '__rel', 'moons', ganymede.id], value: true };
+      var addMoonOp = { op: 'add', path: ['moon', ganymede.id], value: ganymede };
 
-      store.orbitSource.transform(operations).then(function(){
-        start();
-        equal(moons.objectAt(0).get("name"), europa.name);
-        equal(moons.objectAt(1).get("name"), ganymede.name);
+      store.orbitSource.transform(addLinkOp).then(function(){
+        store.orbitSource.transform(addMoonOp).then(function(){
+          start();
+          equal(moons.objectAt(0).get("name"), europa.name);
+          equal(moons.objectAt(1).get("name"), ganymede.name);
+          
+        });
       });
     });
   });  
