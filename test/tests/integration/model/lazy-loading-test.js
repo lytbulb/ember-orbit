@@ -96,7 +96,7 @@ test('hasOne is lazy loaded', function(){
     .then(function(jupiter){
       return jupiter.get('sun');
     })
-    .then(function(sun){
+      .then(function(sun){
       store.orbitSource.on("didTransform", function(){
         start();
         equal(sun.get("id"), 'sun1', "sun id was lazy loaded");
@@ -207,11 +207,10 @@ test("hasMany is updated when new item is added to store's source", function(){
       store.orbitSource.transform(addLinkOp).then(function(){
         store.orbitSource.transform(addMoonOp).then(function(){
           start();
-          equal(moons.objectAt(0).get("name"), europa.name);
-          equal(moons.objectAt(1).get("name"), ganymede.name);
-          
+          equal(moons.objectAt(0).get('name'), europa.name);
+          equal(moons.objectAt(1).get('name'), ganymede.name);
         });
       });
     });
-  });  
+  });
 });
