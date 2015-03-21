@@ -86,7 +86,6 @@ test('hasOne is lazy loaded', function(){
   });
 
   supportingSource.findLinked = function(){
-    store.orbitSource.transform({op: 'add', path: ['star', 'sun1'], value: sun});
     return Ember.RSVP.resolve(sun);
   }
 
@@ -97,11 +96,9 @@ test('hasOne is lazy loaded', function(){
       return jupiter.get('sun');
     })
       .then(function(sun){
-      store.orbitSource.on("didTransform", function(){
         start();
         equal(sun.get("id"), 'sun1', "sun id was lazy loaded");
         equal(sun.get("name"), 'The Sun!', "sun name was lazy loaded");
-      });
     }).catch(function(error){
       debugger
 
