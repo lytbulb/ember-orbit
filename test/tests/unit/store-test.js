@@ -1,4 +1,5 @@
 import Orbit from 'orbit';
+import OC from 'orbit-common/main';
 import OCLocalStorageSource from 'orbit-common/local-storage-source';
 import { RecordNotFoundException } from 'orbit-common/lib/exceptions';
 import attr from 'ember-orbit/fields/attr';
@@ -46,6 +47,7 @@ module("Unit - Store", {
         star: Star
       }
     });
+    console.log("setup complete");
   },
 
   teardown: function() {
@@ -315,7 +317,7 @@ test("#retrieve can synchronously retrieve all records of a particular type", fu
 });
 
 test("#retrieveLinks throws an error if the link hasn't been loaded yet", function(){
-  store.orbitSource.retrieve = sinon.stub().withArgs(['planet', 'planet1', '__rel', 'moons']).returns(undefined);
+  store.orbitSource.retrieve = sinon.stub().withArgs(['planet', 'planet1', '__rel', 'moons']).returns(OC.LINK_NOT_INITIALIZED);
 
   try {
     store.retrieveLinks('planet', 'planet1', 'moons');
@@ -486,4 +488,28 @@ test("#then resolves when all transforms have completed", function() {
       equal(get(store.all('planet'), 'length'), 2, 'two records have been added');
     });
   });
+});
+
+test("#didTransform - add hasMany replaces all objects in a link", function(){
+  Ember.run(function(){
+    var addHasManyOperation = { op: 'add', path: 'planet/jupiter/__rel/moons', value: { 'europa': true } };
+
+    Ember.RSVP.all([
+      store.add('planet', { id: 'jupiter', name: "Jupiter", __rel: { moons: {} } }),
+      store.add('moon', { id: 'europa', name: "Europa", __rel: { planet: null } })
+
+    ])
+    .then(function(){
+      store.transform(addHasManyOperation);
+
+    })
+    .then(function(){
+      var jupiter = store.retrieve('planet', 'jupiter');
+      var europa = store.retrieve('moon', 'europa');
+      ok(jupiter.get('moons').contains(europa), 'moons were added to jupiter');
+
+    });
+  });
+
+
 });
