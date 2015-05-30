@@ -47,7 +47,6 @@ module("Unit - Store", {
         star: Star
       }
     });
-    console.log("setup complete");
   },
 
   teardown: function() {
