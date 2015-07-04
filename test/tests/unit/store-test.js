@@ -315,15 +315,10 @@ test("#retrieve can synchronously retrieve all records of a particular type", fu
   });
 });
 
-test("#retrieveLinks throws an error if the link hasn't been loaded yet", function(){
+test("#retrieveLinks return OC.LINK_NOT_INITIALIZED if link hasn't been loaded yet", function(){
   store.orbitSource.retrieve = sinon.stub().withArgs(['planet', 'planet1', '__rel', 'moons']).returns(OC.LINK_NOT_INITIALIZED);
 
-  try {
-    store.retrieveLinks('planet', 'planet1', 'moons');
-  }
-  catch(error){
-    equal(error.message, "Link planet/planet1/moons is not loaded. Add it to your includes e.g. find('planet', 'planet1', {include: ['moons']})");
-  }
+  equal(store.retrieveLinks('planet', 'planet1', 'moons'), []);
 });
 
 test("#all returns a live RecordArray that stays in sync with records of one type", function() {
