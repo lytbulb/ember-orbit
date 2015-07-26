@@ -315,10 +315,11 @@ test("#retrieve can synchronously retrieve all records of a particular type", fu
   });
 });
 
-test("#retrieveLinks return OC.LINK_NOT_INITIALIZED if link hasn't been loaded yet", function(){
+test("#retrieveLinks return [] if link hasn't been loaded yet", function(){
+  expect(1);
   store.orbitSource.retrieve = sinon.stub().withArgs(['planet', 'planet1', '__rel', 'moons']).returns(OC.LINK_NOT_INITIALIZED);
 
-  equal(store.retrieveLinks('planet', 'planet1', 'moons'), []);
+  deepEqual(store.retrieveLinks('planet', 'planet1', 'moons'), []);
 });
 
 test("#all returns a live RecordArray that stays in sync with records of one type", function() {
